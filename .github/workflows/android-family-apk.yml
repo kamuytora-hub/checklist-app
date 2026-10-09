@@ -31,8 +31,8 @@ jobs:
       - name: Gerar icone Android a partir do MinhaLista SVG
         run: |
           python -m pip install --quiet cairosvg
-          mkdir -p android-family/app/src/main/res/drawable-nodpi
-          python -c "import cairosvg; cairosvg.svg2png(url='icon.svg',write_to='android-family/app/src/main/res/drawable-nodpi/minhalista_icon.png',output_width=512,output_height=512)"
+          mkdir -p android-family/app/src/main/res/mipmap-mdpi android-family/app/src/main/res/mipmap-hdpi android-family/app/src/main/res/mipmap-xhdpi android-family/app/src/main/res/mipmap-xxhdpi android-family/app/src/main/res/mipmap-xxxhdpi
+          python -c "import cairosvg; from pathlib import Path; sizes={'mdpi':48,'hdpi':72,'xhdpi':96,'xxhdpi':144,'xxxhdpi':192}; [(cairosvg.svg2png(url='icon.svg',write_to=str(Path('android-family/app/src/main/res')/('mipmap-'+density)/name),output_width=size,output_height=size)) for density,size in sizes.items() for name in ('ic_launcher.png','ic_launcher_round.png')]"
       - name: Build APK de teste
         working-directory: android-family
         run: gradle :app:assembleDebug --no-daemon
