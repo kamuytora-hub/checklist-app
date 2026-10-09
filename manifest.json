@@ -1,6 +1,6 @@
 {
-  "name": "Checklist App",
-  "short_name": "Checklist",
+  "name": "MinhaLista",
+  "short_name": "MinhaLista",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f4f7fb",
@@ -14,5 +14,5 @@
     }
   ],
   "id": "./",
-  "description": "Checklist pessoal com tarefas, metas e calendário"
+  "description": "MinhaLista: organize suas tarefas, metas e calendário"
 }
