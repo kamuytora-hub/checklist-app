@@ -42,6 +42,12 @@ progress{accent-color:#16c76a;height:11px;margin-top:10px}
 nav{max-width:720px;left:50%;transform:translateX(-50%);padding:10px 14px max(12px,env(safe-area-inset-bottom));box-shadow:0 -6px 24px #07337612;border-radius:20px 20px 0 0;z-index:5}
 nav button{font-size:12px;padding:12px 4px}
 @media(min-width:760px){header{text-align:center}}
+
+.daily-inspiration{background:linear-gradient(135deg,#ffffff,#edf7ff);border:1px solid #dbeafa;border-radius:20px;padding:21px 20px;margin:15px 0;box-shadow:0 6px 22px #0b5ab411;position:relative;overflow:hidden}
+.daily-inspiration:before{content:"✦";position:absolute;right:15px;top:5px;font-size:56px;color:#d6eaff;pointer-events:none}
+.daily-inspiration .inspiration-label{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#0767eb;position:relative}
+.daily-inspiration blockquote{font-family:Georgia,serif;font-size:19px;line-height:1.55;color:#16345c;margin:13px 0 11px;position:relative}
+.daily-inspiration .inspiration-date{font-size:12px;color:#6c829e;position:relative}
 </style></head>
 <body>
 <header><h1><img src="./icon.svg" alt="" style="width:38px;height:38px;vertical-align:middle;border-radius:10px;margin-right:8px">Minha<span style="color:#48e78b">Lista</span></h1><div style="font-size:10px;letter-spacing:2px;margin-left:48px">ORGANIZE SEU DIA</div><div id="who" class="muted" style="color:#dceaf7"></div></header>
@@ -50,7 +56,7 @@ nav button{font-size:12px;padding:12px 4px}
 <input id="email" type="email" placeholder="Seu e-mail" autocomplete="email">
 <input id="password" type="password" placeholder="Senha (mínimo 6 caracteres)" autocomplete="current-password">
 <div class="row"><button onclick="login()">Entrar</button><button class="secondary" onclick="signup()">Criar conta</button></div><p id="authmsg" class="muted"></p></section>
-<section id="app" class="hidden"><div id="weekStrip" class="week-strip"></div>
+<section id="app" class="hidden"><section class="daily-inspiration" aria-label="Inspiração do dia"><div class="inspiration-label">✦ Inspiração do dia</div><blockquote id="dailyQuote">Um novo dia é uma nova oportunidade.</blockquote><div class="inspiration-date" id="dailyQuoteDate"></div></section><div id="weekStrip" class="week-strip"></div>
 <div class="card"><b>Progresso</b><progress id="progress" value="0" max="100"></progress><div id="progressText" class="muted">0%</div></div>
 <div class="card" id="newTaskCard"><h2>＋ Nova tarefa</h2><input id="title" placeholder="O que precisa ser feito?">
 <div class="row"><input id="due" type="date"><select id="priority"><option value="alta">Alta</option><option value="media" selected>Média</option><option value="baixa">Baixa</option></select></div>
@@ -85,6 +91,49 @@ function mondayISO(){const d=new Date(),day=(d.getDay()+6)%7;d.setDate(d.getDate
 async function addGoal(){const title=document.getElementById('goal').value.trim();if(!title)return;const {error}=await sb.from('goals').insert({user_id:user.id,title,week_start:mondayISO()});if(error)return alert(error.message);document.getElementById('goal').value='';await loadAll()}
 async function toggleGoal(id,v){await sb.from('goals').update({completed:v}).eq('id',id).eq('user_id',user.id);await loadAll()}
 function renderGoals(gs){const el=document.getElementById('goals');el.innerHTML='';gs.forEach(g=>{const d=document.createElement('label');d.className='task';d.innerHTML=`<input type="checkbox" ${g.completed?'checked':''}><div class="${g.completed?'done':''}">${esc(g.title)}</div><span></span>`;d.querySelector('input').onchange=e=>toggleGoal(g.id,e.target.checked);el.appendChild(d)})}
-setInterval(()=>{if(user)checkReminders()},60000);
+
+const dailyMessages=[
+"Nem todo caminho revela seu destino no início. Às vezes, é o primeiro passo que acende a luz.",
+"A coragem não exige ausência de medo; ela floresce quando você decide continuar.",
+"Há sementes que só encontram a primavera depois de atravessar um longo inverno.",
+"Você não precisa conhecer todas as respostas para dar o próximo passo.",
+"O que parece pequeno hoje pode ser o começo de uma transformação imensa.",
+"Alguns recomeços chegam em silêncio, disfarçados de manhã comum.",
+"A paz também é uma conquista. Cuide dela como quem cuida de um jardim.",
+"Quando o coração aprende a esperar, a esperança deixa de ser pressa.",
+"Nem toda demora é perda; certos caminhos amadurecem enquanto caminhamos.",
+"A luz que você procura pode começar no gesto de iluminar o dia de alguém.",
+"Cada escolha gentil deixa uma marca invisível no mundo.",
+"Há dias em que vencer significa apenas não desistir de si.",
+"O amanhã se constrói com a delicadeza das decisões de hoje.",
+"Não compare sua jornada com a de quem caminha em outra estação.",
+"Até a menor estrela encontra um jeito de atravessar a escuridão.",
+"Ser grato não é ter tudo; é reconhecer a beleza do que já floresceu.",
+"Um coração sereno escuta possibilidades que a pressa não percebe.",
+"Se o caminho mudou, talvez a vida esteja lhe mostrando outra paisagem.",
+"Às vezes, o maior avanço é aprender a descansar sem culpa.",
+"A bondade que você oferece também transforma quem você se torna.",
+"Você pode começar de novo sem apagar a história que o trouxe até aqui.",
+"Grandes mudanças costumam nascer de pequenos compromissos diários.",
+"Confie no valor dos passos que ninguém vê.",
+"O tempo não desperdiça toda espera; algumas esperas ensinam a florescer.",
+"Não é preciso vencer o mundo hoje. Cuide bem do que está ao seu alcance.",
+"Há força em quem aprende a ser suave mesmo depois das tempestades.",
+"Permita que seus sonhos cresçam no ritmo das suas possibilidades.",
+"O destino não dispensa a escolha: cada gesto ajuda a escrever o caminho.",
+"Quando uma porta se fecha, você ainda pode construir uma janela.",
+"Leve esperança no bolso e coragem nos passos.",
+"Que hoje você encontre beleza no simples e sentido no que faz."
+];
+function showDailyMessage(){
+ const el=document.getElementById('dailyQuote');if(!el)return;
+ const now=new Date(),dayKey=Date.UTC(now.getFullYear(),now.getMonth(),now.getDate())/86400000;
+ el.textContent='“'+dailyMessages[((dayKey%dailyMessages.length)+dailyMessages.length)%dailyMessages.length]+'”';
+ document.getElementById('dailyQuoteDate').textContent=new Intl.DateTimeFormat('pt-BR',{day:'numeric',month:'long',year:'numeric'}).format(now);
+}
+showDailyMessage();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)showDailyMessage()});
+setInterval(showDailyMessage,60000);
+\nsetInterval(()=>{if(user)checkReminders()},60000);
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
 </script></body></html>
