@@ -1,9 +1,12 @@
-name: Gerar APK Checklist Familia
+name: Gerar APK MinhaLista Familia
 on:
   push:
     branches: [main]
     paths:
       - 'android-family/**'
+      - 'index.html'
+      - 'icon.svg'
+      - 'manifest.json'
       - '.github/workflows/android-family-apk.yml'
   workflow_dispatch:
 permissions:
