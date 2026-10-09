@@ -134,6 +134,7 @@ function showDailyMessage(){
 showDailyMessage();
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)showDailyMessage()});
 setInterval(showDailyMessage,60000);
-\nsetInterval(()=>{if(user)checkReminders()},60000);
+
+setInterval(()=>{if(user)checkReminders()},60000);
 if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
 </script></body></html>
