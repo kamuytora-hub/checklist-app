@@ -17,7 +17,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      # Android SDK ja vem preinstalado no runner Ubuntu; evitar sdkmanager tools obsoleto.
+      - name: Verificar Android SDK
+        run: |
+          test -d "$ANDROID_HOME"
+          echo "ANDROID_HOME=$ANDROID_HOME"
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.11.1'
