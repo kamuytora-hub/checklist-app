@@ -45,8 +45,13 @@ jobs:
       - name: Build APK de teste
         working-directory: android-family
         run: gradle :app:assembleDebug --no-daemon
+      - name: Nomear instalador MinhaLista
+        run: |
+          mkdir -p dist
+          cp android-family/app/build/outputs/apk/debug/app-debug.apk dist/MinhaLista.apk
+          test -s dist/MinhaLista.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: Checklist-App-Familia-APK
-          path: android-family/app/build/outputs/apk/debug/app-debug.apk
+          name: MinhaLista-Android
+          path: dist/MinhaLista.apk
           retention-days: 30
