@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#174a7e"><link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#174a7e"><link rel="manifest" href="manifest.json"><link rel="icon" type="image/svg+xml" href="./icon.svg">
 <title>Checklist App</title>
 <style>
 *{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#f4f7fb;color:#17202a}
@@ -17,7 +17,7 @@ nav button{margin:0} .danger{background:#a93226} h2{font-size:18px;margin:4px 0 
 <body>
 <header><h1>✓ Checklist App</h1><div id="who" class="muted" style="color:#dceaf7"></div></header>
 <main>
-<section id="auth" class="card"><h2>Entrar ou criar conta</h2>
+<div class="card"><h2>Instalar no celular</h2><button id="installBtn" class="secondary" onclick="installApp()">Instalar aplicativo</button><p id="installHelp" class="muted">No iPhone: Safari → Compartilhar → Adicionar à Tela de Início. No Android: menu do navegador → Instalar aplicativo.</p></div><section id="auth" class="card"><h2>Entrar ou criar conta</h2>
 <input id="email" type="email" placeholder="Seu e-mail" autocomplete="email">
 <input id="password" type="password" placeholder="Senha (mínimo 6 caracteres)" autocomplete="current-password">
 <div class="row"><button onclick="login()">Entrar</button><button class="secondary" onclick="signup()">Criar conta</button></div><p id="authmsg" class="muted"></p></section>
@@ -32,6 +32,7 @@ nav button{margin:0} .danger{background:#a93226} h2{font-size:18px;margin:4px 0 
 <nav id="nav" class="hidden"><button onclick="loadAll()">↻ Sincronizar</button><button class="secondary" onclick="document.getElementById('title').focus()">＋ Nova tarefa</button></nav>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+let installPrompt=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;document.getElementById('installBtn').textContent='Instalar agora'});window.addEventListener('appinstalled',()=>{installPrompt=null;document.getElementById('installHelp').textContent='Aplicativo instalado!';document.getElementById('installBtn').classList.add('hidden')});async function installApp(){if(installPrompt){installPrompt.prompt();await installPrompt.userChoice;installPrompt=null}else{document.getElementById('installHelp').textContent='Android: abra o menu ⋮ e escolha Instalar aplicativo. iPhone: abra no Safari, toque Compartilhar e Adicionar à Tela de Início.'}}
 const SUPABASE_URL="https://ozdrwnijikjbquvcxryt.supabase.co", SUPABASE_KEY="sb_publishable_CxcYHiI88ud4FhgJ6s8G7g_DJKbWcfX";
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY); let user=null,tasks=[];
 function msg(x){document.getElementById('authmsg').textContent=x}
